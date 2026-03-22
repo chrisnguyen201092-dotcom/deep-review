@@ -49,13 +49,22 @@ For each file, analyze these categories IN ORDER:
 
 #### Reliability  
 - **Error handling**: Bare except/catch-all that swallows errors silently
-- **Resource management**: Unclosed connections, file handles, memory leaks
+- **Resource management**: Unclosed connections, file handles, memory leaks, temp files not cleaned up
 - **Concurrency**: Thread safety, deadlock potential, non-atomic operations
 
 #### Cross-File Issues
 - **Inconsistency**: Security check in one file but missing in similar file
 - **Dead code**: Functions defined but never called (especially security-relevant ones like validators)
 - **Integration**: Mismatched interfaces between modules, unused middleware
+
+#### Commonly Missed Patterns (CHECK THESE EXPLICITLY)
+- **Missing rate limiting**: Are public endpoints protected? Can the limiter be bypassed (e.g., via X-Forwarded-For spoofing)?
+- **Missing input validation**: Are numeric fields, enum values, and role parameters validated? Can negative prices/quantities be submitted?
+- **Incomplete cleanup**: Is subscription cancellation reflected in the payment provider? Are temp files cleaned up on error?
+- **Unused security features**: Is there middleware defined but never applied to routes? Validators imported but not called?
+- **Hardcoded secret fallbacks**: Do JWT secrets, API tokens, or passwords fall back to hardcoded values when env vars are missing?
+- **Silent error swallowing**: Are there bare `except: pass` or `catch(e) {}` blocks that hide failures?
+- **Timezone bugs**: Are `datetime.now()` (local) and `datetime.utcnow()` (UTC) mixed in the same workflow?
 
 ### Phase 3: Verify Each Finding
 
@@ -75,6 +84,10 @@ Common patterns that LOOK like bugs but AREN'T:
 - In-memory caches/stores in single-process applications (not a scaling bug)
 - Error stack traces in server-side logs (not information disclosure)
 - PII masking that shows first/last 2 chars (standard practice, not a leak)
+- `threading.Lock()` in single-process apps (correct for that context)
+- `hashlib.new(algorithm)` with safe default (acceptable for non-security hashing like change detection)
+- Audit middleware that logs request metadata (not sensitive data exposure)
+- API key auth that hashes before DB comparison (correct pattern)
 
 ## Output Format
 
