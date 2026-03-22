@@ -88,6 +88,9 @@ Common patterns that LOOK like bugs but AREN'T:
 - `hashlib.new(algorithm)` with safe default (acceptable for non-security hashing like change detection)
 - Audit middleware that logs request metadata (not sensitive data exposure)
 - API key auth that hashes before DB comparison (correct pattern)
+- **Whitelist-based input validation** (e.g., `allowed.includes(input) ? input : default`) — this is a CORRECT defense, NOT a bug
+- **Encoding fallback chains** (e.g., try utf-8 then fall back to latin-1) — standard file reading pattern, NOT data corruption
+- **Validators defined but not imported in every file** — a validator existing for future use is NOT "dead code" unless you prove no file uses it
 
 ## Output Format
 
