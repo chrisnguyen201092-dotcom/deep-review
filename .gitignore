@@ -1,0 +1,24 @@
+# Dependencies
+node_modules/
+
+# Plaintext ground truth (use encrypted versions only)
+tests/ground-truth/
+
+# Test results
+tests/results/
+tests/prompts/
+
+# Benchmark reports
+benchmark-report*.json
+
+# Environment
+.env
+.env.*
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
